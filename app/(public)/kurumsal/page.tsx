@@ -1,18 +1,16 @@
 import type { Metadata } from "next";
-import { prisma } from "@/lib/prisma";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { SectionTitle } from "@/components/ui/section-title";
 import { buildServiceWhatsappMessage, buildWhatsappLink } from "@/lib/constants";
 import { buildPageMetadata } from "@/lib/seo";
 import { parseCorporateContent } from "@/lib/utils";
+import { getCorporatePage } from "@/lib/data";
 
 export const dynamic = "force-dynamic";
 
 export async function generateMetadata(): Promise<Metadata> {
-  const page = await prisma.page.findFirst({
-    where: { slug: "kurumsal", isPublished: true }
-  });
+  const page = await getCorporatePage();
 
   return buildPageMetadata({
     title: page?.title || "Kurumsal",
@@ -23,9 +21,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function CorporatePage() {
-  const page = await prisma.page.findFirst({
-    where: { slug: "kurumsal", isPublished: true }
-  });
+  const page = await getCorporatePage();
 
   const parsed = parseCorporateContent(page?.content || "");
   const heroTitle = "Su arıtma alanında güven veren, sistemli ve modern bir hizmet yaklaşımı";

@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
-import { prisma } from "@/lib/prisma";
 import { Card } from "@/components/ui/card";
 import { SectionTitle } from "@/components/ui/section-title";
 import { formatDate } from "@/lib/utils";
 import { buildPageMetadata } from "@/lib/seo";
+import { getBlogPosts } from "@/lib/data";
 
 export const dynamic = "force-dynamic";
 
@@ -17,10 +17,7 @@ export const metadata: Metadata = buildPageMetadata({
 });
 
 export default async function BlogPage() {
-  const posts = await prisma.blogPost.findMany({
-    where: { isPublished: true },
-    orderBy: { createdAt: "desc" }
-  });
+  const posts = await getBlogPosts();
 
   return (
     <div className="container-shell space-y-10 py-12">

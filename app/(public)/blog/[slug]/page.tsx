@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { prisma } from "@/lib/prisma";
 import { Card } from "@/components/ui/card";
 import { absoluteUrl, buildArticleSchema } from "@/lib/seo";
 import { formatDate } from "@/lib/utils";
+import { getBlogPostBySlug } from "@/lib/data";
 
 export const dynamic = "force-dynamic";
 
@@ -11,7 +11,7 @@ type Params = { params: Promise<{ slug: string }> };
 
 export async function generateMetadata({ params }: Params): Promise<Metadata> {
   const { slug } = await params;
-  const post = await prisma.blogPost.findUnique({ where: { slug } });
+  const post = await getBlogPostBySlug(slug);
 
   if (!post) {
     return { title: "Yazı Bulunamadı" };
@@ -34,7 +34,7 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
 
 export default async function BlogDetailPage({ params }: Params) {
   const { slug } = await params;
-  const post = await prisma.blogPost.findUnique({ where: { slug } });
+  const post = await getBlogPostBySlug(slug);
 
   if (!post || !post.isPublished) {
     notFound();

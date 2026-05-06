@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
-import { prisma } from "@/lib/prisma";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { SectionTitle } from "@/components/ui/section-title";
 import { buildServiceWhatsappMessage, buildWhatsappLink } from "@/lib/constants";
 import { buildPageMetadata } from "@/lib/seo";
+import { getServices } from "@/lib/data";
 
 export const dynamic = "force-dynamic";
 
@@ -16,7 +16,7 @@ export const metadata: Metadata = buildPageMetadata({
 });
 
 export default async function ServicesPage() {
-  const services = await prisma.service.findMany({ where: { isActive: true }, orderBy: { createdAt: "asc" } });
+  const services = await getServices();
 
   return (
     <div className="container-shell space-y-10 py-12">
