@@ -2,14 +2,10 @@ import type { MetadataRoute } from "next";
 import { prisma } from "@/lib/prisma";
 import { reservedPageSlugs } from "@/lib/data";
 
+export const dynamic = "force-dynamic";
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
-
-  const [products, posts, pages] = await Promise.all([
-    prisma.product.findMany({ select: { slug: true, updatedAt: true, isActive: true } }),
-    prisma.blogPost.findMany({ select: { slug: true, updatedAt: true, isPublished: true } }),
-    prisma.page.findMany({ select: { slug: true, updatedAt: true, isPublished: true } })
-  ]);
 
   const staticRoutes: MetadataRoute.Sitemap = [
     { path: "",                        priority: 1.0,  freq: "daily"   },
@@ -25,6 +21,16 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     changeFrequency: freq as MetadataRoute.Sitemap[number]["changeFrequency"],
     priority
   }));
+
+  if (!process.env.DATABASE_URL) {
+    return staticRoutes;
+  }
+
+  const [products, posts, pages] = await Promise.all([
+    prisma.product.findMany({ select: { slug: true, updatedAt: true, isActive: true } }),
+    prisma.blogPost.findMany({ select: { slug: true, updatedAt: true, isPublished: true } }),
+    prisma.page.findMany({ select: { slug: true, updatedAt: true, isPublished: true } })
+  ]);
 
   const productRoutes: MetadataRoute.Sitemap = products
     .filter((p: { slug: string; updatedAt: Date; isActive: boolean }) => p.isActive)

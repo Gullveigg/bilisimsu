@@ -6,6 +6,8 @@ import { SectionTitle } from "@/components/ui/section-title";
 import { buildServiceWhatsappMessage, buildWhatsappLink } from "@/lib/constants";
 import { buildPageMetadata } from "@/lib/seo";
 
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = buildPageMetadata({
   title: "Hizmetler",
   description: "Kurulum, servis, bakım ve filtre değişimi hizmetlerini inceleyin.",

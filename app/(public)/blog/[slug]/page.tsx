@@ -5,6 +5,8 @@ import { Card } from "@/components/ui/card";
 import { absoluteUrl, buildArticleSchema } from "@/lib/seo";
 import { formatDate } from "@/lib/utils";
 
+export const dynamic = "force-dynamic";
+
 type Params = { params: Promise<{ slug: string }> };
 
 export async function generateMetadata({ params }: Params): Promise<Metadata> {

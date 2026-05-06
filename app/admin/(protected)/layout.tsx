@@ -3,6 +3,8 @@ import { AdminHeader } from "@/components/admin/admin-header";
 import { AdminSidebar } from "@/components/admin/admin-sidebar";
 import { getSession } from "@/lib/auth";
 
+export const dynamic = "force-dynamic";
+
 export default async function AdminProtectedLayout({
   children
 }: Readonly<{ children: React.ReactNode }>) {

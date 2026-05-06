@@ -7,6 +7,8 @@ import { SectionTitle } from "@/components/ui/section-title";
 import { formatDate } from "@/lib/utils";
 import { buildPageMetadata } from "@/lib/seo";
 
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = buildPageMetadata({
   title: "Blog / Faydalı Bilgiler",
   description: "Su arıtma cihazları, bakım süreçleri ve doğru ürün seçimi hakkında içerikler.",

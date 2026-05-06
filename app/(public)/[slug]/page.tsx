@@ -5,6 +5,8 @@ import { buildPageMetadata } from "@/lib/seo";
 import { getPublishedPageBySlug } from "@/lib/data";
 import { convertPlainTextToHtml } from "@/lib/utils";
 
+export const dynamic = "force-dynamic";
+
 type Params = { params: Promise<{ slug: string }> };
 
 export async function generateMetadata({ params }: Params): Promise<Metadata> {
