@@ -1,0 +1,1 @@
+ALTER TABLE "Product" ADD COLUMN "imageGallery" TEXT NOT NULL DEFAULT '[]';
