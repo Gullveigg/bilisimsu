@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/admin";
+import { phpUpload } from "@/lib/php-api";
 
 const ALLOWED_TYPES = new Set([
   "image/jpeg", "image/png", "image/webp", "image/gif",
@@ -26,30 +27,18 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Dosya çok büyük (max 100 MB)." }, { status: 400 });
   }
 
-  const phpUploadUrl = process.env.PHP_UPLOAD_URL;
-  const phpUploadSecret = process.env.PHP_UPLOAD_SECRET;
-
-  if (!phpUploadUrl || !phpUploadSecret) {
+  if (!process.env.PHP_API_URL) {
     return NextResponse.json({ error: "Upload sunucusu yapılandırılmamış." }, { status: 500 });
   }
 
-  const uploadForm = new FormData();
-  uploadForm.append("file", file);
-  uploadForm.append("secret", phpUploadSecret);
+  const upload = new FormData();
+  upload.append("file", file);
 
-  const phpRes = await fetch(phpUploadUrl, {
-    method: "POST",
-    body: uploadForm,
-  });
+  const res  = await phpUpload(upload);
+  const data = await res.json() as { url?: string; error?: string };
 
-  if (!phpRes.ok) {
-    return NextResponse.json({ error: "Dosya sunucusuna yüklenemedi." }, { status: 502 });
-  }
-
-  const data = await phpRes.json() as { url?: string; error?: string };
-
-  if (!data.url) {
-    return NextResponse.json({ error: data.error ?? "Bilinmeyen hata." }, { status: 502 });
+  if (!res.ok || !data.url) {
+    return NextResponse.json({ error: data.error ?? "Dosya yüklenemedi." }, { status: 502 });
   }
 
   return NextResponse.json({ url: data.url });

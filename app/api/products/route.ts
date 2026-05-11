@@ -1,16 +1,12 @@
 import { NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
-import { prisma } from "@/lib/prisma";
 import { requireAdmin } from "@/lib/admin";
-import { productSchema } from "@/lib/validators";
+import { phpGet, phpPost } from "@/lib/php-api";
 
 export async function GET() {
-  const products = await prisma.product.findMany({
-    include: { category: true },
-    orderBy: { createdAt: "desc" }
-  });
-
-  return NextResponse.json(products);
+  const res  = await phpGet("products.php");
+  const data = await res.json();
+  return NextResponse.json(data, { status: res.status });
 }
 
 export async function POST(request: Request) {
@@ -18,24 +14,14 @@ export async function POST(request: Request) {
   if (!auth.ok) return auth.response;
 
   const body = await request.json();
-  const parsed = productSchema.safeParse(body);
+  const res  = await phpPost("products.php", body);
+  const data = await res.json();
 
-  if (!parsed.success) {
-    return NextResponse.json({ error: "Geçersiz ürün verisi." }, { status: 400 });
+  if (res.ok) {
+    revalidatePath("/");
+    revalidatePath("/urunler");
+    revalidatePath("/admin/products");
   }
 
-  const product = await prisma.product.create({
-    data: {
-      ...parsed.data,
-      price: parsed.data.price || null,
-      imageGallery: JSON.stringify(parsed.data.imageGallery)
-    }
-  });
-
-  revalidatePath("/");
-  revalidatePath("/urunler");
-  revalidatePath(`/urunler/${product.slug}`);
-  revalidatePath("/admin/products");
-
-  return NextResponse.json(product, { status: 201 });
+  return NextResponse.json(data, { status: res.status });
 }

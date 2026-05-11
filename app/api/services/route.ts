@@ -1,32 +1,20 @@
+// Mevcut dosya — Prisma → PHP services.php proxy
+// Admin panel fetch('/api/services') tarafından çağrılır
 import { NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
-import { prisma } from "@/lib/prisma";
 import { requireAdmin } from "@/lib/admin";
-import { serviceSchema } from "@/lib/validators";
+import { phpGet, phpPost } from "@/lib/php-api";
 
 export async function GET() {
-  const services = await prisma.service.findMany({
-    orderBy: { createdAt: "asc" }
-  });
-
-  return NextResponse.json(services);
+  const res = await phpGet("services.php");
+  return NextResponse.json(await res.json(), { status: res.status });
 }
 
 export async function POST(request: Request) {
   const auth = await requireAdmin();
   if (!auth.ok) return auth.response;
-
-  const body = await request.json();
-  const parsed = serviceSchema.safeParse(body);
-
-  if (!parsed.success) {
-    return NextResponse.json({ error: "Geçersiz hizmet verisi." }, { status: 400 });
-  }
-
-  const service = await prisma.service.create({ data: parsed.data });
-
-  revalidatePath("/");
-  revalidatePath("/hizmetler");
-  revalidatePath("/admin/services");
-  return NextResponse.json(service, { status: 201 });
+  const res = await phpPost("services.php", await request.json());
+  const data = await res.json();
+  if (res.ok) { revalidatePath("/"); revalidatePath("/hizmetler"); revalidatePath("/admin/services"); }
+  return NextResponse.json(data, { status: res.status });
 }

@@ -5,7 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { ArrowRight, BadgeCheck } from "lucide-react";
 import siteLogo from "@/app/(public)/assets/logo/bilesim_su_aritma_logo_2.png";
-import type { Prisma, Service, BlogPost } from "@prisma/client";
+import type { AppService as Service, AppBlogPost as BlogPost, AppProductWithCategory as ProductWithCategory } from "@/lib/app-types";
 import { HeroSlider } from "@/components/public/hero-slider";
 import { ReferencesMarquee } from "@/components/public/references-marquee";
 import { ProductCard } from "@/components/public/product-card";
@@ -16,7 +16,6 @@ import { SectionTitle } from "@/components/ui/section-title";
 import { getSiteData } from "@/lib/data";
 import { buildPageMetadata } from "@/lib/seo";
 
-type ProductWithCategory = Prisma.ProductGetPayload<{ include: { category: true } }>;
 
 export const metadata: Metadata = buildPageMetadata({
   title: "Anasayfa",

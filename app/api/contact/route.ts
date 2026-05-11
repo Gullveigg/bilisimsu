@@ -1,21 +1,11 @@
 import { NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
-import { contactSchema } from "@/lib/validators";
+import { phpContactPost } from "@/lib/php-api";
 
 export async function POST(request: Request) {
   const body = await request.json();
-  const parsed = contactSchema.safeParse(body);
-
-  if (!parsed.success) {
+  if (!body.name || !body.email || !body.subject || !body.message) {
     return NextResponse.json({ error: "Lütfen tüm zorunlu alanları doğru doldurun." }, { status: 400 });
   }
-
-  const message = await prisma.contactMessage.create({
-    data: {
-      ...parsed.data,
-      phone: parsed.data.phone || null
-    }
-  });
-
-  return NextResponse.json(message, { status: 201 });
+  const res = await phpContactPost(body);
+  return NextResponse.json(await res.json(), { status: res.status });
 }

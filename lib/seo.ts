@@ -143,7 +143,7 @@ export function buildArticleSchema({
   title: string;
   excerpt: string;
   coverImage: string;
-  createdAt: Date;
+  createdAt: Date | string;
   slug: string;
 }) {
   return {
@@ -153,7 +153,7 @@ export function buildArticleSchema({
     description: excerpt,
     image: coverImage,
     url: absoluteUrl(`/blog/${slug}`),
-    datePublished: createdAt.toISOString(),
+    datePublished: typeof createdAt === "string" ? createdAt : createdAt.toISOString(),
     author: { "@type": "Organization", name: COMPANY.name },
     publisher: { "@type": "Organization", name: COMPANY.name }
   };

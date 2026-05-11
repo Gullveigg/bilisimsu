@@ -6,7 +6,7 @@ type Reference = {
   id: string;
   name: string;
   logoUrl: string;
-  website: string | null;
+  website?: string | null;
 };
 
 export function ReferencesMarquee({ references }: { references: Reference[] }) {

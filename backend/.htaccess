@@ -1,0 +1,7 @@
+# Apache yapılandırması — PHP sunucusu backend/ klasörü için
+# Dizin listelemeyi kapat, uploads/ içinde PHP'yi devre dışı bırak
+Options -Indexes
+
+<LimitExcept GET POST PATCH DELETE OPTIONS>
+  Deny from all
+</LimitExcept>

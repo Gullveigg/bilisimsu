@@ -1,11 +1,9 @@
 import Image from "next/image";
 import { ArrowRight } from "lucide-react";
-import type { Category, Product } from "@prisma/client";
+import type { AppProductWithCategory as ProductWithCategory } from "@/lib/app-types";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { buildProductWhatsappMessage, buildWhatsappLink } from "@/lib/constants";
-
-type ProductWithCategory = Product & { category: Category };
 
 export function ProductCard({ product }: Readonly<{ product: ProductWithCategory }>) {
   return (
