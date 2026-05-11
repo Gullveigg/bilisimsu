@@ -44,4 +44,4 @@
 - [x] API auth kontrolü: tüm write endpoint'leri `requireAdmin` ile korumalı
 - [x] `graphify update .` — 178 node, 177 edge, 48 community
 - [ ] Mobil görünüm son kontrolü (tarayıcıda doğrulama)
-- [ ] Lighthouse performans ve erişilebilirlik testi
+- [x] Lighthouse performans ve erişilebilirlik testi (P:96 A:100 BP:100 SEO:100)

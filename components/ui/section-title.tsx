@@ -16,7 +16,7 @@ export function SectionTitle({
   return (
     <div className={cn("space-y-3", align === "center" && "mx-auto max-w-2xl text-center")}>
       {eyebrow && (
-        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--primary)]">
+        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--primary-text)]">
           {eyebrow}
         </p>
       )}

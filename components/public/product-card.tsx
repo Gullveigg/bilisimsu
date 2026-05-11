@@ -20,7 +20,7 @@ export function ProductCard({ product }: Readonly<{ product: ProductWithCategory
       </div>
       <div className="space-y-4 p-3">
         <div className="space-y-2">
-          <span className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--primary)]">
+          <span className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--primary-text)]">
             {product.category.name}
           </span>
           <h3 className="text-xl font-semibold">{product.name}</h3>

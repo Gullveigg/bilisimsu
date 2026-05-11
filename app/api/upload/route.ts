@@ -1,6 +1,4 @@
 import { NextResponse } from "next/server";
-import { writeFile, mkdir } from "node:fs/promises";
-import path from "node:path";
 import { requireAdmin } from "@/lib/admin";
 
 const ALLOWED_TYPES = new Set([
@@ -28,14 +26,31 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Dosya çok büyük (max 100 MB)." }, { status: 400 });
   }
 
-  const ext = file.name.split(".").pop() ?? "bin";
-  const filename = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
-  const dir = path.join(process.cwd(), "public", "slides");
-  const filepath = path.join(dir, filename);
+  const phpUploadUrl = process.env.PHP_UPLOAD_URL;
+  const phpUploadSecret = process.env.PHP_UPLOAD_SECRET;
 
-  await mkdir(dir, { recursive: true });
-  const buffer = Buffer.from(await file.arrayBuffer());
-  await writeFile(filepath, buffer);
+  if (!phpUploadUrl || !phpUploadSecret) {
+    return NextResponse.json({ error: "Upload sunucusu yapılandırılmamış." }, { status: 500 });
+  }
 
-  return NextResponse.json({ url: `/slides/${filename}` });
+  const uploadForm = new FormData();
+  uploadForm.append("file", file);
+  uploadForm.append("secret", phpUploadSecret);
+
+  const phpRes = await fetch(phpUploadUrl, {
+    method: "POST",
+    body: uploadForm,
+  });
+
+  if (!phpRes.ok) {
+    return NextResponse.json({ error: "Dosya sunucusuna yüklenemedi." }, { status: 502 });
+  }
+
+  const data = await phpRes.json() as { url?: string; error?: string };
+
+  if (!data.url) {
+    return NextResponse.json({ error: data.error ?? "Bilinmeyen hata." }, { status: 502 });
+  }
+
+  return NextResponse.json({ url: data.url });
 }

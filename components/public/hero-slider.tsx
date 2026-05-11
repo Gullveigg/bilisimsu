@@ -194,13 +194,17 @@ export function HeroSlider({ slides: rawSlides }: { slides?: Slide[] }) {
               key={i}
               onClick={() => setActive(i)}
               aria-label={`Slayt ${i + 1}`}
-              className={cn(
-                "h-1.5 rounded-full transition-all duration-300",
-                i === active
-                  ? "w-8 bg-white"
-                  : "w-1.5 bg-white/30 hover:bg-white/60"
-              )}
-            />
+              className="flex h-6 w-6 items-center justify-center"
+            >
+              <span
+                className={cn(
+                  "block h-1.5 rounded-full transition-all duration-300",
+                  i === active
+                    ? "w-8 bg-white"
+                    : "w-1.5 bg-white/30 hover:bg-white/60"
+                )}
+              />
+            </button>
           ))}
         </div>
         <div className="flex gap-1">

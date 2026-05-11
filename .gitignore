@@ -9,3 +9,6 @@ prisma/**/*.db-journal
 dist
 coverage
 tsconfig.tsbuildinfo
+public/slides/
+graphify-out/
+task/

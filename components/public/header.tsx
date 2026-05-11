@@ -123,7 +123,7 @@ export function Header({ pages = [] }: HeaderProps) {
             className="h-13 w-auto object-contain"
           />
           <div className="leading-none">
-            <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--primary)]">
+            <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--primary-text)]">
               Bileşim
             </p>
             <p className="mt-0.5 text-sm font-semibold text-[var(--foreground)]">

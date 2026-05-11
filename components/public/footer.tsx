@@ -17,13 +17,13 @@ export function Footer() {
   return (
     <footer className="mt-24">
       {/* CTA bandı */}
-      <div className="bg-[var(--primary)]">
+      <div className="bg-[#2d5200]">
         <div className="container-shell flex flex-col items-center gap-6 py-12 text-center sm:flex-row sm:justify-between sm:text-left">
           <div className="space-y-1.5">
             <p className="text-xl font-semibold text-white">
               Ücretsiz keşif için bugün bize ulaşın
             </p>
-            <p className="text-sm text-blue-200">
+            <p className="text-sm text-white/75">
               İhtiyacınıza uygun çözümü birlikte belirleyelim.
             </p>
           </div>
@@ -115,7 +115,7 @@ export function Footer() {
 
         {/* Telif hakkı çubuğu */}
         <div className="border-t border-white/10">
-          <div className="container-shell flex flex-col items-center gap-2 py-6 text-center text-xs text-[#4a6a84] sm:flex-row sm:justify-between sm:text-left">
+          <div className="container-shell flex flex-col items-center gap-2 py-6 text-center text-xs text-slate-400 sm:flex-row sm:justify-between sm:text-left">
             <p>© {new Date().getFullYear()} Bilişim Su Arıtma. Tüm hakları saklıdır.</p>
             <p>Su arıtma sistemleri · Servis · Bakım</p>
           </div>
