@@ -9,13 +9,13 @@
  *   UPLOAD_BASE_URL (örn: https://sunucuadresin.com/api/uploads)
  */
 
-define('DB_HOST',        getenv('MYSQL_HOST')       ?: 'localhost');
-define('DB_NAME',        getenv('MYSQL_DB')         ?: 'bilisimsuaritma');
-define('DB_USER',        getenv('MYSQL_USER')       ?: 'root');
-define('DB_PASS',        getenv('MYSQL_PASS')       ?: '');
-define('ADMIN_SECRET',   getenv('ADMIN_SECRET')     ?: 'change-this-very-secret-key');
+define('DB_HOST',        'localhost');
+define('DB_NAME',        'serkantuna_bilisimsuaritma');
+define('DB_USER',        getenv('MYSQL_USER') ?: 'MYSQL_KULLANICI_ADI');
+define('DB_PASS',        getenv('MYSQL_PASS') ?: 'MYSQL_SIFRE');
+define('ADMIN_SECRET',   'bilisim-super-gizli-2024');
 define('UPLOAD_DIR',     __DIR__ . '/uploads/');
-define('UPLOAD_BASE_URL', rtrim(getenv('UPLOAD_BASE_URL') ?: 'https://sunucuadresin.com/api/uploads', '/'));
+define('UPLOAD_BASE_URL', 'https://api.bilisimsuaritma.com.tr/uploads');
 
 // ── PDO bağlantısı ──────────────────────────────────────────────────────────
 function db(): PDO {

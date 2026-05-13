@@ -150,14 +150,26 @@ export async function getSiteData() {
     };
   }
 
-  const [productsRes, categoriesRes, servicesRes, blogRes, slidesRes, refsRes] = await Promise.all([
-    phpGet("products.php"),
-    phpGet("categories.php"),
-    phpGet("services.php"),
-    phpGet("blog.php"),
-    phpGet("banners.php"),
-    phpGet("references.php"),
-  ]);
+  let productsRes, categoriesRes, servicesRes, blogRes, slidesRes, refsRes;
+  try {
+    [productsRes, categoriesRes, servicesRes, blogRes, slidesRes, refsRes] = await Promise.all([
+      phpGet("products.php"),
+      phpGet("categories.php"),
+      phpGet("services.php"),
+      phpGet("blog.php"),
+      phpGet("banners.php"),
+      phpGet("references.php"),
+    ]);
+  } catch {
+    return {
+      featuredProducts: fallbackProducts,
+      categories: fallbackCategories,
+      services: fallbackServices,
+      blogPosts: fallbackBlogPosts,
+      slides: fallbackSlides,
+      references: [] as Reference[],
+    };
+  }
 
   const [allProducts, categories, services, blogPosts, rawSlides, references] = await Promise.all([
     safeJson<ProductWithCategory[]>(productsRes, fallbackProducts),
