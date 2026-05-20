@@ -192,15 +192,19 @@ export async function getSiteData() {
 
 export async function getProducts() {
   if (!hasPHPApi()) return fallbackProducts;
-  const res = await phpGet("products.php");
-  return safeJson<ProductWithCategory[]>(res, fallbackProducts);
+  try {
+    const res = await phpGet("products.php");
+    return safeJson<ProductWithCategory[]>(res, fallbackProducts);
+  } catch { return fallbackProducts; }
 }
 
 export async function getProductBySlug(slug: string) {
   if (!hasPHPApi()) return fallbackProducts.find((p) => p.slug === slug) ?? null;
-  const res = await phpGet("products.php", { id: slug });
-  if (!res.ok) return null;
-  try { return (await res.json()) as ProductWithCategory; } catch { return null; }
+  try {
+    const res = await phpGet("products.php", { id: slug });
+    if (!res.ok) return null;
+    return (await res.json()) as ProductWithCategory;
+  } catch { return null; }
 }
 
 export async function getRelatedProducts(categoryId: string, productId: string) {
@@ -210,17 +214,19 @@ export async function getRelatedProducts(categoryId: string, productId: string) 
 
 export async function getPublishedPages() {
   if (!hasPHPApi()) return [] as Page[];
-  const res = await phpGet("pages.php");
-  const pages = await safeJson<Page[]>(res, []);
-  return pages.filter((p) => p.isPublished && !reservedPageSlugs.has(p.slug));
+  try {
+    const res = await phpGet("pages.php");
+    const pages = await safeJson<Page[]>(res, []);
+    return pages.filter((p) => p.isPublished && !reservedPageSlugs.has(p.slug));
+  } catch { return [] as Page[]; }
 }
 
 export async function getPublishedPageBySlug(slug: string) {
   if (reservedPageSlugs.has(slug)) return null;
   if (!hasPHPApi()) return null;
-  const res = await phpGet("pages.php", { id: slug });
-  if (!res.ok) return null;
   try {
+    const res = await phpGet("pages.php", { id: slug });
+    if (!res.ok) return null;
     const page = (await res.json()) as Page;
     return page.isPublished ? page : null;
   } catch { return null; }
@@ -228,28 +234,34 @@ export async function getPublishedPageBySlug(slug: string) {
 
 export async function getServices() {
   if (!hasPHPApi()) return fallbackServices;
-  const res = await phpGet("services.php");
-  return safeJson<Service[]>(res, fallbackServices);
+  try {
+    const res = await phpGet("services.php");
+    return safeJson<Service[]>(res, fallbackServices);
+  } catch { return fallbackServices; }
 }
 
 export async function getBlogPosts() {
   if (!hasPHPApi()) return fallbackBlogPosts;
-  const res = await phpGet("blog.php");
-  return safeJson<BlogPost[]>(res, fallbackBlogPosts);
+  try {
+    const res = await phpGet("blog.php");
+    return safeJson<BlogPost[]>(res, fallbackBlogPosts);
+  } catch { return fallbackBlogPosts; }
 }
 
 export async function getBlogPostBySlug(slug: string) {
   if (!hasPHPApi()) return fallbackBlogPosts.find((p) => p.slug === slug) ?? null;
-  const res = await phpGet("blog.php", { id: slug });
-  if (!res.ok) return null;
-  try { return (await res.json()) as BlogPost; } catch { return null; }
+  try {
+    const res = await phpGet("blog.php", { id: slug });
+    if (!res.ok) return null;
+    return (await res.json()) as BlogPost;
+  } catch { return null; }
 }
 
 export async function getCorporatePage() {
   if (!hasPHPApi()) return null;
-  const res = await phpGet("pages.php", { id: "kurumsal" });
-  if (!res.ok) return null;
   try {
+    const res = await phpGet("pages.php", { id: "kurumsal" });
+    if (!res.ok) return null;
     const page = (await res.json()) as Page;
     return page.isPublished ? page : null;
   } catch { return null; }

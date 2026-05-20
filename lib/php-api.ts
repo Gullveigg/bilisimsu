@@ -12,7 +12,10 @@ function phpUrl(path: string, params?: Record<string, string>): string {
 }
 
 export async function phpGet(path: string, params?: Record<string, string>) {
-  return fetch(phpUrl(path, params), { next: { revalidate: 0 } });
+  return fetch(phpUrl(path, params), {
+    next: { revalidate: 0 },
+    signal: AbortSignal.timeout(5000),
+  });
 }
 
 export async function phpAdminGet(path: string, params?: Record<string, string>) {
