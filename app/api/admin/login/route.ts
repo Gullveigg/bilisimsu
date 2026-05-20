@@ -8,7 +8,13 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Geçersiz giriş bilgileri." }, { status: 400 });
   }
 
-  const res = await phpLogin(body.email, body.password);
+  let res: Response;
+  try {
+    res = await phpLogin(body.email, body.password);
+  } catch {
+    return NextResponse.json({ error: "Sunucuya bağlanılamadı, lütfen tekrar deneyin." }, { status: 503 });
+  }
+
   if (!res.ok) {
     return NextResponse.json(await res.json(), { status: res.status });
   }

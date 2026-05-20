@@ -3,6 +3,8 @@
 const BASE   = (process.env.PHP_API_URL ?? "").replace(/\/$/, "");
 const SECRET = process.env.ADMIN_SECRET ?? "";
 
+const TIMEOUT = 8000;
+
 function phpUrl(path: string, params?: Record<string, string>): string {
   const url = new URL(`${BASE}/${path}`);
   if (params) {
@@ -22,6 +24,7 @@ export async function phpAdminGet(path: string, params?: Record<string, string>)
   return fetch(phpUrl(path, params), {
     headers: { Authorization: `Bearer ${SECRET}` },
     next: { revalidate: 0 },
+    signal: AbortSignal.timeout(TIMEOUT),
   });
 }
 
@@ -30,6 +33,7 @@ export async function phpPost(path: string, body: unknown, params?: Record<strin
     method: "POST",
     headers: { "Content-Type": "application/json", Authorization: `Bearer ${SECRET}` },
     body: JSON.stringify(body),
+    signal: AbortSignal.timeout(TIMEOUT),
   });
 }
 
@@ -38,6 +42,7 @@ export async function phpPatch(path: string, body: unknown, params?: Record<stri
     method: "PATCH",
     headers: { "Content-Type": "application/json", Authorization: `Bearer ${SECRET}` },
     body: JSON.stringify(body),
+    signal: AbortSignal.timeout(TIMEOUT),
   });
 }
 
@@ -45,6 +50,7 @@ export async function phpDelete(path: string, params?: Record<string, string>) {
   return fetch(phpUrl(path, params), {
     method: "DELETE",
     headers: { Authorization: `Bearer ${SECRET}` },
+    signal: AbortSignal.timeout(TIMEOUT),
   });
 }
 
@@ -53,6 +59,7 @@ export async function phpUpload(formData: FormData) {
     method: "POST",
     headers: { Authorization: `Bearer ${SECRET}` },
     body: formData,
+    signal: AbortSignal.timeout(30000),
   });
 }
 
@@ -61,6 +68,7 @@ export async function phpLogin(email: string, password: string) {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ email, password }),
+    signal: AbortSignal.timeout(TIMEOUT),
   });
 }
 
@@ -69,5 +77,6 @@ export async function phpContactPost(body: unknown) {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(body),
+    signal: AbortSignal.timeout(TIMEOUT),
   });
 }
