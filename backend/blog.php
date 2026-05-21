@@ -30,7 +30,7 @@ if ($m === 'POST') {
     $newId = cuid();
     db()->prepare("INSERT INTO blog_posts (id, title, slug, excerpt, content, cover_image, is_published) VALUES (?,?,?,?,?,?,?)")
         ->execute([$newId, $b['title'], !empty($b['slug']) ? $b['slug'] : makeSlug($b['title']),
-                   $b['excerpt'], $b['content'], $b['coverImage'], boolVal($b['isPublished'] ?? true)]);
+                   $b['excerpt'], $b['content'], $b['coverImage'], toBoolInt($b['isPublished'] ?? true)]);
     $stmt = db()->prepare('SELECT * FROM blog_posts WHERE id = ?');
     $stmt->execute([$newId]);
     ok(mapBlog($stmt->fetch()), 201);
@@ -43,7 +43,7 @@ if ($m === 'PATCH') {
     foreach (['title'=>'title','slug'=>'slug','excerpt'=>'excerpt','content'=>'content','coverImage'=>'cover_image'] as $jk=>$col) {
         if (array_key_exists($jk, $b)) { $fields[] = "`$col` = ?"; $vals[] = $b[$jk]; }
     }
-    if (array_key_exists('isPublished', $b)) { $fields[] = '`is_published` = ?'; $vals[] = boolVal($b['isPublished']); }
+    if (array_key_exists('isPublished', $b)) { $fields[] = '`is_published` = ?'; $vals[] = toBoolInt($b['isPublished']); }
     if (empty($fields)) err('Güncellenecek alan yok.');
     $vals[] = $id;
     db()->prepare('UPDATE blog_posts SET ' . implode(', ', $fields) . ' WHERE id = ?')->execute($vals);

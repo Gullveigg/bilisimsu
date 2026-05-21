@@ -25,7 +25,7 @@ if ($m === 'POST') {
     $newId = cuid();
     db()->prepare("INSERT INTO ref_items (id, name, logo_url, website, sort_order, is_active) VALUES (?,?,?,?,?,?)")
         ->execute([$newId, $b['name'], $b['logoUrl'], $b['website'] ?? null,
-                   (int)($b['order'] ?? 0), boolVal($b['isActive'] ?? true)]);
+                   (int)($b['order'] ?? 0), toBoolInt($b['isActive'] ?? true)]);
     $stmt = db()->prepare('SELECT * FROM ref_items WHERE id = ?');
     $stmt->execute([$newId]);
     ok(mapReference($stmt->fetch()), 201);
@@ -39,7 +39,7 @@ if ($m === 'PATCH') {
         if (array_key_exists($jk, $b)) { $fields[] = "`$col` = ?"; $vals[] = $b[$jk]; }
     }
     if (array_key_exists('order', $b)) { $fields[] = '`sort_order` = ?'; $vals[] = (int)$b['order']; }
-    if (array_key_exists('isActive', $b)) { $fields[] = '`is_active` = ?'; $vals[] = boolVal($b['isActive']); }
+    if (array_key_exists('isActive', $b)) { $fields[] = '`is_active` = ?'; $vals[] = toBoolInt($b['isActive']); }
     if (empty($fields)) err('Güncellenecek alan yok.');
     $vals[] = $id;
     db()->prepare('UPDATE ref_items SET ' . implode(', ', $fields) . ' WHERE id = ?')->execute($vals);

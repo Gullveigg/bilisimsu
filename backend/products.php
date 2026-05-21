@@ -16,8 +16,8 @@ $joinSql = "
 
 if ($m === 'GET') {
     if ($id) {
-        $stmt = db()->prepare($joinSql . ' WHERE p.id = ?');
-        $stmt->execute([$id]);
+        $stmt = db()->prepare($joinSql . ' WHERE p.id = ? OR p.slug = ?');
+        $stmt->execute([$id, $id]);
         $row = $stmt->fetch();
         if (!$row) err('Ürün bulunamadı.', 404);
         ok(mapProduct($row));
@@ -44,9 +44,9 @@ if ($m === 'POST') {
         !empty($b['slug']) ? $b['slug'] : makeSlug($b['name']),
         $b['shortDescription'], $b['description'], $b['technicalSpecs'],
         $b['price'] ?? null, $b['imageUrl'], $gallery,
-        boolVal($b['isFeatured']     ?? false),
-        boolVal($b['isActive']       ?? true),
-        boolVal($b['whatsappEnabled'] ?? true),
+        toBoolInt($b['isFeatured']     ?? false),
+        toBoolInt($b['isActive']       ?? true),
+        toBoolInt($b['whatsappEnabled'] ?? true),
         $b['categoryId'],
     ]);
     $stmt = db()->prepare($joinSql . ' WHERE p.id = ?');
@@ -74,7 +74,7 @@ if ($m === 'PATCH') {
         if (array_key_exists($jk, $b)) { $fields[] = "`$col` = ?"; $vals[] = $b[$jk]; }
     }
     foreach (['isFeatured'=>'is_featured','isActive'=>'is_active','whatsappEnabled'=>'whatsapp_enabled'] as $jk => $col) {
-        if (array_key_exists($jk, $b)) { $fields[] = "`$col` = ?"; $vals[] = boolVal($b[$jk]); }
+        if (array_key_exists($jk, $b)) { $fields[] = "`$col` = ?"; $vals[] = toBoolInt($b[$jk]); }
     }
     if (array_key_exists('imageGallery', $b)) {
         $fields[] = '`image_gallery` = ?';

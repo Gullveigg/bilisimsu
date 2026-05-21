@@ -26,7 +26,7 @@ if ($m === 'POST') {
     $newId = cuid();
     db()->prepare("INSERT INTO services (id, title, slug, description, icon, is_active) VALUES (?,?,?,?,?,?)")
         ->execute([$newId, $b['title'], !empty($b['slug']) ? $b['slug'] : makeSlug($b['title']),
-                   $b['description'], $b['icon'], boolVal($b['isActive'] ?? true)]);
+                   $b['description'], $b['icon'], toBoolInt($b['isActive'] ?? true)]);
     $stmt = db()->prepare('SELECT * FROM services WHERE id = ?');
     $stmt->execute([$newId]);
     ok(mapService($stmt->fetch()), 201);
@@ -39,7 +39,7 @@ if ($m === 'PATCH') {
     foreach (['title'=>'title','slug'=>'slug','description'=>'description','icon'=>'icon'] as $jk=>$col) {
         if (array_key_exists($jk, $b)) { $fields[] = "`$col` = ?"; $vals[] = $b[$jk]; }
     }
-    if (array_key_exists('isActive', $b)) { $fields[] = '`is_active` = ?'; $vals[] = boolVal($b['isActive']); }
+    if (array_key_exists('isActive', $b)) { $fields[] = '`is_active` = ?'; $vals[] = toBoolInt($b['isActive']); }
     if (empty($fields)) err('Güncellenecek alan yok.');
     $vals[] = $id;
     db()->prepare('UPDATE services SET ' . implode(', ', $fields) . ' WHERE id = ?')->execute($vals);

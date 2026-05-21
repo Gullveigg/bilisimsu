@@ -23,7 +23,7 @@ if ($m === 'POST') {
     $newId = cuid();
     db()->prepare("INSERT INTO pages (id, title, slug, excerpt, content, is_published) VALUES (?,?,?,?,?,?)")
         ->execute([$newId, $b['title'], !empty($b['slug']) ? $b['slug'] : makeSlug($b['title']),
-                   $b['excerpt'], $b['content'], boolVal($b['isPublished'] ?? true)]);
+                   $b['excerpt'], $b['content'], toBoolInt($b['isPublished'] ?? true)]);
     $stmt = db()->prepare('SELECT * FROM pages WHERE id = ?');
     $stmt->execute([$newId]);
     ok(mapPage($stmt->fetch()), 201);
@@ -36,7 +36,7 @@ if ($m === 'PATCH') {
     foreach (['title'=>'title','slug'=>'slug','excerpt'=>'excerpt','content'=>'content'] as $jk=>$col) {
         if (array_key_exists($jk, $b)) { $fields[] = "`$col` = ?"; $vals[] = $b[$jk]; }
     }
-    if (array_key_exists('isPublished', $b)) { $fields[] = '`is_published` = ?'; $vals[] = boolVal($b['isPublished']); }
+    if (array_key_exists('isPublished', $b)) { $fields[] = '`is_published` = ?'; $vals[] = toBoolInt($b['isPublished']); }
     if (empty($fields)) err('Güncellenecek alan yok.');
     $vals[] = $id;
     db()->prepare('UPDATE pages SET ' . implode(', ', $fields) . ' WHERE id = ?')->execute($vals);

@@ -30,7 +30,7 @@ if ($m === 'POST') {
         VALUES (?,?,?,?,?,?,?,?,?,?,?)
     ")->execute([$newId, $b['eyebrow'], $b['title'], $b['description'], $b['href'], $b['cta'],
                  $trust, $b['imageUrl'] ?? null, $b['videoUrl'] ?? null,
-                 (int)($b['order'] ?? 0), boolVal($b['isActive'] ?? true)]);
+                 (int)($b['order'] ?? 0), toBoolInt($b['isActive'] ?? true)]);
     $stmt = db()->prepare('SELECT * FROM hero_slides WHERE id = ?');
     $stmt->execute([$newId]);
     ok(mapSlide($stmt->fetch()), 201);
@@ -49,7 +49,7 @@ if ($m === 'PATCH') {
         $vals[]   = json_encode(is_array($b['trust']) ? $b['trust'] : []);
     }
     if (array_key_exists('order', $b)) { $fields[] = '`sort_order` = ?'; $vals[] = (int)$b['order']; }
-    if (array_key_exists('isActive', $b)) { $fields[] = '`is_active` = ?'; $vals[] = boolVal($b['isActive']); }
+    if (array_key_exists('isActive', $b)) { $fields[] = '`is_active` = ?'; $vals[] = toBoolInt($b['isActive']); }
     if (empty($fields)) err('Güncellenecek alan yok.');
     $vals[] = $id;
     db()->prepare('UPDATE hero_slides SET ' . implode(', ', $fields) . ' WHERE id = ?')->execute($vals);

@@ -102,7 +102,7 @@ function qid(): ?string {
     return $_GET['id'] ?? null;
 }
 
-function boolVal(mixed $v): int {
+function toBoolInt(mixed $v): int {
     return ($v === true || $v === 1 || $v === '1' || $v === 'true') ? 1 : 0;
 }
 
