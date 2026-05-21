@@ -1,15 +1,21 @@
 import { notFound } from "next/navigation";
 import { ProductForm } from "@/components/admin/product-form";
-import { prisma } from "@/lib/prisma";
+import { phpGet } from "@/lib/php-api";
 
 type Params = { params: Promise<{ id: string }> };
 
 export default async function EditProductPage({ params }: Params) {
   const { id } = await params;
-  const [product, categories] = await Promise.all([
-    prisma.product.findUnique({ where: { id } }),
-    prisma.category.findMany({ orderBy: { name: "asc" } })
-  ]);
+  let product: Parameters<typeof ProductForm>[0]["product"] | null = null;
+  let categories: Parameters<typeof ProductForm>[0]["categories"] = [];
+  try {
+    const [productRes, categoriesRes] = await Promise.all([
+      phpGet("products.php", { id }),
+      phpGet("categories.php"),
+    ]);
+    if (productRes.ok) product = await productRes.json();
+    if (categoriesRes.ok) categories = await categoriesRes.json();
+  } catch { /* backend erişilemez */ }
 
   if (!product) {
     notFound();

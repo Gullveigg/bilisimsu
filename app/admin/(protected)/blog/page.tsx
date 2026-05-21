@@ -1,8 +1,12 @@
 import { ResourceManager } from "@/components/admin/resource-manager";
-import { prisma } from "@/lib/prisma";
+import { phpGet } from "@/lib/php-api";
 
 export default async function AdminBlogPage() {
-  const posts = await prisma.blogPost.findMany({ orderBy: { createdAt: "desc" } });
+  let posts: Record<string, unknown>[] = [];
+  try {
+    const res = await phpGet("blog.php");
+    if (res.ok) posts = await res.json();
+  } catch { /* backend erişilemez */ }
 
   return (
     <ResourceManager

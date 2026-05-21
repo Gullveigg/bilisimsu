@@ -1,12 +1,13 @@
 import { Button } from "@/components/ui/button";
 import { ProductsClient } from "@/components/admin/products-client";
-import { prisma } from "@/lib/prisma";
+import { phpGet } from "@/lib/php-api";
 
 export default async function AdminProductsPage() {
-  const products = await prisma.product.findMany({
-    include: { category: true },
-    orderBy: { createdAt: "desc" }
-  });
+  let products: Parameters<typeof ProductsClient>[0]["products"] = [];
+  try {
+    const res = await phpGet("products.php");
+    if (res.ok) products = await res.json();
+  } catch { /* backend erişilemez */ }
 
   return (
     <div className="space-y-6">

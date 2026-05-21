@@ -1,7 +1,11 @@
 import { BannerManager } from "@/components/admin/banner-manager";
-import { prisma } from "@/lib/prisma";
+import { phpGet } from "@/lib/php-api";
 
 export default async function AdminBannersPage() {
-  const slides = await prisma.heroSlide.findMany({ orderBy: { order: "asc" } });
-  return <BannerManager slides={slides} />;
+  let slides: unknown[] = [];
+  try {
+    const res = await phpGet("banners.php");
+    if (res.ok) slides = await res.json();
+  } catch { /* backend erişilemez */ }
+  return <BannerManager slides={slides as Parameters<typeof BannerManager>[0]["slides"]} />;
 }

@@ -1,11 +1,12 @@
 import { ResourceManager } from "@/components/admin/resource-manager";
-import { prisma } from "@/lib/prisma";
+import { phpGet } from "@/lib/php-api";
 
 export default async function AdminCategoriesPage() {
-  const categories = await prisma.category.findMany({
-    include: { _count: { select: { products: true } } },
-    orderBy: { name: "asc" }
-  });
+  let categories: Record<string, unknown>[] = [];
+  try {
+    const res = await phpGet("categories.php");
+    if (res.ok) categories = await res.json();
+  } catch { /* backend erişilemez */ }
 
   return (
     <ResourceManager

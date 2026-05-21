@@ -1,8 +1,12 @@
 import { ProductForm } from "@/components/admin/product-form";
-import { prisma } from "@/lib/prisma";
+import { phpGet } from "@/lib/php-api";
 
 export default async function NewProductPage() {
-  const categories = await prisma.category.findMany({ orderBy: { name: "asc" } });
+  let categories: Parameters<typeof ProductForm>[0]["categories"] = [];
+  try {
+    const res = await phpGet("categories.php");
+    if (res.ok) categories = await res.json();
+  } catch { /* backend erişilemez */ }
 
   return (
     <div className="space-y-6">

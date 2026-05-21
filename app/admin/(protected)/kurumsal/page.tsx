@@ -1,10 +1,14 @@
 import { notFound } from "next/navigation";
-import { prisma } from "@/lib/prisma";
+import { phpGet } from "@/lib/php-api";
 import { parseCorporateContent } from "@/lib/utils";
 import { KurumsalEditor } from "@/components/admin/kurumsal-editor";
 
 export default async function AdminKurumsalPage() {
-  const page = await prisma.page.findUnique({ where: { slug: "kurumsal" } });
+  let page: { id: string; title: string; slug: string; excerpt: string; content: string; isPublished: boolean } | null = null;
+  try {
+    const res = await phpGet("pages.php", { id: "kurumsal" });
+    if (res.ok) page = await res.json();
+  } catch { /* backend erişilemez */ }
 
   if (!page) notFound();
 

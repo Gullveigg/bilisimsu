@@ -1,8 +1,12 @@
 import { ResourceManager } from "@/components/admin/resource-manager";
-import { prisma } from "@/lib/prisma";
+import { phpGet } from "@/lib/php-api";
 
 export default async function AdminPagesPage() {
-  const pages = await prisma.page.findMany({ orderBy: { createdAt: "desc" } });
+  let pages: Record<string, unknown>[] = [];
+  try {
+    const res = await phpGet("pages.php");
+    if (res.ok) pages = await res.json();
+  } catch { /* backend erişilemez */ }
 
   return (
     <ResourceManager
