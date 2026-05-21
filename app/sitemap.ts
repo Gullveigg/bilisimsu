@@ -1,5 +1,5 @@
 import type { MetadataRoute } from "next";
-import { prisma } from "@/lib/prisma";
+import { phpGet } from "@/lib/php-api";
 import { reservedPageSlugs } from "@/lib/data";
 
 export const dynamic = "force-dynamic";
@@ -22,42 +22,33 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority
   }));
 
-  if (!process.env.DATABASE_URL) {
+  if (!process.env.PHP_API_URL) return staticRoutes;
+
+  try {
+    const [productsRes, blogRes, pagesRes] = await Promise.all([
+      phpGet("products.php"),
+      phpGet("blog.php"),
+      phpGet("pages.php"),
+    ]);
+
+    const products: { slug: string; updatedAt: string; isActive: boolean }[]    = productsRes.ok ? await productsRes.json() : [];
+    const posts:    { slug: string; updatedAt: string; isPublished: boolean }[]  = blogRes.ok     ? await blogRes.json()     : [];
+    const pages:    { slug: string; updatedAt: string; isPublished: boolean }[]  = pagesRes.ok    ? await pagesRes.json()    : [];
+
+    const productRoutes: MetadataRoute.Sitemap = products
+      .filter((p) => p.isActive)
+      .map((p) => ({ url: `${baseUrl}/urunler/${p.slug}`, lastModified: new Date(p.updatedAt), changeFrequency: "weekly" as const, priority: 0.8 }));
+
+    const blogRoutes: MetadataRoute.Sitemap = posts
+      .filter((p) => p.isPublished)
+      .map((p) => ({ url: `${baseUrl}/blog/${p.slug}`, lastModified: new Date(p.updatedAt), changeFrequency: "monthly" as const, priority: 0.6 }));
+
+    const pageRoutes: MetadataRoute.Sitemap = pages
+      .filter((p) => p.isPublished && !reservedPageSlugs.has(p.slug))
+      .map((p) => ({ url: `${baseUrl}/${p.slug}`, lastModified: new Date(p.updatedAt), changeFrequency: "monthly" as const, priority: 0.5 }));
+
+    return [...staticRoutes, ...productRoutes, ...blogRoutes, ...pageRoutes];
+  } catch {
     return staticRoutes;
   }
-
-  const [products, posts, pages] = await Promise.all([
-    prisma.product.findMany({ select: { slug: true, updatedAt: true, isActive: true } }),
-    prisma.blogPost.findMany({ select: { slug: true, updatedAt: true, isPublished: true } }),
-    prisma.page.findMany({ select: { slug: true, updatedAt: true, isPublished: true } })
-  ]);
-
-  const productRoutes: MetadataRoute.Sitemap = products
-    .filter((p: { slug: string; updatedAt: Date; isActive: boolean }) => p.isActive)
-    .map((p: { slug: string; updatedAt: Date; isActive: boolean }) => ({
-      url: `${baseUrl}/urunler/${p.slug}`,
-      lastModified: p.updatedAt,
-      changeFrequency: "weekly" as const,
-      priority: 0.8
-    }));
-
-  const blogRoutes: MetadataRoute.Sitemap = posts
-    .filter((p: { slug: string; updatedAt: Date; isPublished: boolean }) => p.isPublished)
-    .map((p: { slug: string; updatedAt: Date; isPublished: boolean }) => ({
-      url: `${baseUrl}/blog/${p.slug}`,
-      lastModified: p.updatedAt,
-      changeFrequency: "monthly" as const,
-      priority: 0.6
-    }));
-
-  const pageRoutes: MetadataRoute.Sitemap = pages
-    .filter((p: { slug: string; updatedAt: Date; isPublished: boolean }) => p.isPublished && !reservedPageSlugs.has(p.slug))
-    .map((p: { slug: string; updatedAt: Date; isPublished: boolean }) => ({
-      url: `${baseUrl}/${p.slug}`,
-      lastModified: p.updatedAt,
-      changeFrequency: "monthly" as const,
-      priority: 0.5
-    }));
-
-  return [...staticRoutes, ...productRoutes, ...blogRoutes, ...pageRoutes];
 }
