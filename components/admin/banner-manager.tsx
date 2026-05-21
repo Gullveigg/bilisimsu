@@ -14,14 +14,14 @@ type Slide = {
   description: string;
   href: string;
   cta: string;
-  trust: string;
+  trust: string | string[];
   imageUrl: string | null;
   videoUrl: string | null;
   order: number;
   isActive: boolean;
 };
 
-const empty = (): Omit<Slide, "id" | "trust"> & { trust: string[] } => ({
+const empty = (): Omit<Slide, "id"> & { trust: string[] } => ({
   eyebrow: "",
   title: "",
   description: "",
@@ -34,10 +34,13 @@ const empty = (): Omit<Slide, "id" | "trust"> & { trust: string[] } => ({
   isActive: true
 });
 
+function parseTrust(raw: string | string[]): string[] {
+  if (Array.isArray(raw)) return raw;
+  try { return JSON.parse(raw); } catch { return []; }
+}
+
 function parseSlide(s: Slide) {
-  let trust: string[] = [];
-  try { trust = JSON.parse(s.trust); } catch { trust = []; }
-  return { ...s, trust };
+  return { ...s, trust: parseTrust(s.trust) };
 }
 
 function inputClass(full = false) {
@@ -296,8 +299,7 @@ export function BannerManager({ slides }: { slides: Slide[] }) {
         <div className="grid gap-4 px-6 py-6 md:px-8 md:py-8">
           {slides.length ? (
             slides.map((s) => {
-              let trust: string[] = [];
-              try { trust = JSON.parse(s.trust); } catch { trust = []; }
+              const trust = parseTrust(s.trust);
               return (
                 <Card key={s.id}
                   className="flex flex-col gap-5 rounded-[24px] border border-[var(--border)] bg-white/95 p-5 shadow-none lg:flex-row lg:items-start lg:justify-between">
